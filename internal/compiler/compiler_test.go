@@ -1,6 +1,7 @@
 package compiler
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/go-serv/internal/compiler/ast"
@@ -9,18 +10,21 @@ import (
 )
 
 func TestWorld(t *testing.T) {
-	input := []byte(`gocc lalala`)
+	input := []byte(`
+		service TestService ( TestMessage1 ) : TestMessage1;
+	`)
 	lex := lexer.NewLexer(input)
 	p := parser.NewParser()
 	st, err := p.Parse(lex)
 	if err != nil {
 		panic(err)
 	}
-	w, ok := st.(*ast.World)
+	w, ok := st.(*ast.Program)
 	if !ok {
 		t.Fatalf("This is not a world")
 	}
-	if w.String() != `[{gocc} {lalala}]` {
+	get := fmt.Sprintf("%v", w)
+	if get != `[{TestService}]` {
 		t.Fatalf("Wrong world %v", w)
 	}
 }

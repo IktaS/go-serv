@@ -1,22 +1,64 @@
 /* Lexical Part */
+!whitespace : '\t' | '\n' | '\r' | ' ' ;
+!lineComment  : '/' '/' { . } '\n' ;
+!blockComment : '/' '*' { . | '*' } '*' '/' ;
 
-id : 'a'-'z' {'a'-'z'} ;
+_letter : 'A'-'Z' | 'a'-'z' | '_' ;
+_digit : '0'-'9' ;
+_alpha : _letter | _digit ;
 
-!whitespace : ' ' | '\t' | '\n' | '\r' ;
+ident : _letter {_alpha} ;
+
+lbrace : '{' ;
+rbrace : '}' ;
+lparen : '(' ;
+rparen : ')' ;
+colon : ':' ;
+semicolon : ';' ;
+comma : ',' ;
+
+int : 'i' 'n' 't' ;
+float : 'f' 'l' 'o' 'a' 't' ;
+string : 's' 't' 'r' 'i' 'n' 'g' ;
+byte : 'b' 'y' 't' 'e' ;
+service : 's' 'e' 'r' 'v' 'i' 'c' 'e' ;
+message : 'm' 'e' 's' 's' 'a' 'g' 'e' ;
 
 /* Syntax Part */
 
 << import "github.com/go-serv/internal/compiler/ast" >>
 
-World
-    : Animals << ast.NewWorld($0) >> 
+Program
+    : Definitions << ast.NewProgram($0) >> 
     ;
 
-Animals
-    : Animals Animal << ast.AppendAnimals($0, $1) >>
-    | empty << ast.NewAnimalList() >>
+Definitions
+    : Definitions Definition << ast.AppendDefinitions($0, $1) >>
+    | empty << ast.NewDefinitionList() >>
     ;
 
-Animal
-    : id << ast.NewAnimal($0) >> 
+Definition
+    : service ident lparen Args rparen colon ident semicolon << ast.NewService($1, $3, $6) >> 
+    | message ident lbrace Props rbrace semicolon << ast.NewMessage($0, $2) >>
+    ;
+
+Args
+    : Args comma Arg << ast.AppendArguments($0, $1) >>
+    | empty << ast.NewArgumentList() >>
+    ;
+
+Arg
+    : ident << ast.NewArgument($0) >>
+    ;
+
+Props
+    : Props Prop << ast.AppendProps($0, $1) >>
+    | empty << ast.NewPropList() >>
+    ;
+
+Prop
+    : ident int semicolon << ast.NewIntProp($0) >>
+    | ident float semicolon << ast.NewFloatProp($0) >>
+    | ident string semicolon << ast.NewStringProp($0) >>
+    | ident byte semicolon << ast.NewByteProp($0) >>
     ;
