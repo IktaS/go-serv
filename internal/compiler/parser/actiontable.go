@@ -14,10 +14,10 @@ var actionTab = actionTable{
 	actionRow{ // S0
 		canRecover: false,
 		actions: [numSymbols]action{
-			nil,      // INVALID
-			nil,      // $
-			shift(2), // hello
-			nil,      // id
+			nil,       // INVALID
+			reduce(3), // $, reduce: Animals
+			nil,       // empty
+			reduce(3), // id, reduce: Animals
 		},
 	},
 	actionRow{ // S1
@@ -25,26 +25,35 @@ var actionTab = actionTable{
 		actions: [numSymbols]action{
 			nil,          // INVALID
 			accept(true), // $
-			nil,          // hello
+			nil,          // empty
 			nil,          // id
 		},
 	},
 	actionRow{ // S2
 		canRecover: false,
 		actions: [numSymbols]action{
-			nil,      // INVALID
-			nil,      // $
-			nil,      // hello
-			shift(3), // id
+			nil,       // INVALID
+			reduce(1), // $, reduce: World
+			nil,       // empty
+			shift(4),  // id
 		},
 	},
 	actionRow{ // S3
 		canRecover: false,
 		actions: [numSymbols]action{
 			nil,       // INVALID
-			reduce(1), // $, reduce: Hello
-			nil,       // hello
-			nil,       // id
+			reduce(2), // $, reduce: Animals
+			nil,       // empty
+			reduce(2), // id, reduce: Animals
+		},
+	},
+	actionRow{ // S4
+		canRecover: false,
+		actions: [numSymbols]action{
+			nil,       // INVALID
+			reduce(4), // $, reduce: Animal
+			nil,       // empty
+			reduce(4), // id, reduce: Animal
 		},
 	},
 }

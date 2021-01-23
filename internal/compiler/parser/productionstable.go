@@ -20,7 +20,7 @@ type (
 
 var productionsTable = ProdTab{
 	ProdTabEntry{
-		String: `S' : Hello	<<  >>`,
+		String: `S' : World	<<  >>`,
 		Id:         "S'",
 		NTType:     0,
 		Index:      0,
@@ -30,13 +30,43 @@ var productionsTable = ProdTab{
 		},
 	},
 	ProdTabEntry{
-		String: `Hello : "hello" id	<< ast.NewWorld(X[1]) >>`,
-		Id:         "Hello",
+		String: `World : Animals	<< ast.NewWorld(X[0]) >>`,
+		Id:         "World",
 		NTType:     1,
 		Index:      1,
+		NumSymbols: 1,
+		ReduceFunc: func(X []Attrib) (Attrib, error) {
+			return ast.NewWorld(X[0])
+		},
+	},
+	ProdTabEntry{
+		String: `Animals : Animals Animal	<< ast.AppendAnimals(X[0], X[1]) >>`,
+		Id:         "Animals",
+		NTType:     2,
+		Index:      2,
 		NumSymbols: 2,
 		ReduceFunc: func(X []Attrib) (Attrib, error) {
-			return ast.NewWorld(X[1])
+			return ast.AppendAnimals(X[0], X[1])
+		},
+	},
+	ProdTabEntry{
+		String: `Animals : empty	<< ast.NewAnimalList() >>`,
+		Id:         "Animals",
+		NTType:     2,
+		Index:      3,
+		NumSymbols: 0,
+		ReduceFunc: func(X []Attrib) (Attrib, error) {
+			return ast.NewAnimalList()
+		},
+	},
+	ProdTabEntry{
+		String: `Animal : id	<< ast.NewAnimal(X[0]) >>`,
+		Id:         "Animal",
+		NTType:     3,
+		Index:      4,
+		NumSymbols: 1,
+		ReduceFunc: func(X []Attrib) (Attrib, error) {
+			return ast.NewAnimal(X[0])
 		},
 	},
 }

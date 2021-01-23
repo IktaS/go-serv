@@ -8,4 +8,15 @@ id : 'a'-'z' {'a'-'z'} ;
 
 << import "github.com/go-serv/internal/compiler/ast" >>
 
-Hello:  "hello" id << ast.NewWorld($1) >> ;
+World
+    : Animals << ast.NewWorld($0) >> 
+    ;
+
+Animals
+    : Animals Animal << ast.AppendAnimals($0, $1) >>
+    | empty << ast.NewAnimalList() >>
+    ;
+
+Animal
+    : id << ast.NewAnimal($0) >> 
+    ;

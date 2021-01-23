@@ -32,24 +32,4 @@ var ActTab = ActionTable{
 		Accept: 3,
 		Ignore: "",
 	},
-	ActionRow{ // S3
-		Accept: 3,
-		Ignore: "",
-	},
-	ActionRow{ // S4
-		Accept: 3,
-		Ignore: "",
-	},
-	ActionRow{ // S5
-		Accept: 3,
-		Ignore: "",
-	},
-	ActionRow{ // S6
-		Accept: 3,
-		Ignore: "",
-	},
-	ActionRow{ // S7
-		Accept: 2,
-		Ignore: "",
-	},
 }

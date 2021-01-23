@@ -9,7 +9,7 @@ import (
 )
 
 func TestWorld(t *testing.T) {
-	input := []byte(`hello gocc`)
+	input := []byte(`gocc lalala`)
 	lex := lexer.NewLexer(input)
 	p := parser.NewParser()
 	st, err := p.Parse(lex)
@@ -20,7 +20,7 @@ func TestWorld(t *testing.T) {
 	if !ok {
 		t.Fatalf("This is not a world")
 	}
-	if w.Name != `gocc` {
-		t.Fatalf("Wrong world %v", w.Name)
+	if w.String() != `[{gocc} {lalala}]` {
+		t.Fatalf("Wrong world %v", w)
 	}
 }
