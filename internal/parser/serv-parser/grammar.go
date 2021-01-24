@@ -8,32 +8,24 @@ import (
 
 //Serv is entry point to our parser
 type Serv struct {
-	Pos lexer.Position
-
-	Definitions []*Definition `parser:"( @@ ";"* )*"`
+	Definitions []*Definition `( @@ ";"* )*`
 }
 
 //Definition is each definition in our service
 type Definition struct {
-	Pos lexer.Position
-
-	Service *Service `parser:"@@*"`
-	Message *Message `parser:"@@*"`
+	Service *Service `@@*`
+	Message *Message `@@*`
 }
 
 // Service is a definition of a service
 type Service struct {
-	Pos lexer.Position
-
 	Name     string  `"service" @Ident`
 	Request  []*Type `"(" ( @@ ","* )* ")"`
-	Response *Type   `":" @@ `
+	Response *Type   `":"? @@?`
 }
 
 // Message is a definition of a message
 type Message struct {
-	Pos lexer.Position
-
 	Name        string               `"message" @Ident`
 	Definitions []*MessageDefinition `"{" @@* "}"`
 }
@@ -47,30 +39,18 @@ type MessageDefinition struct {
 
 // Enum is enum
 type Enum struct {
-	Pos lexer.Position
-
-	Name   string            `"enum" @Ident`
-	Values []*EnumDefinition `"{" ( @@ ( ";" )* )* "}"`
-}
-
-// Enum is definition of an enum
-type EnumDefinition struct {
-	Pos   lexer.Position
-	Value *EnumValue ` @@`
+	Name   string       `"enum" @Ident`
+	Values []*EnumValue `"{" ( @@ ( ";" )* )* "}"`
 }
 
 // EnumValue is enum value
 type EnumValue struct {
-	Pos lexer.Position
-
 	Key   string `@Ident`
 	Value int    `"=" @( [ "-" ] Int )`
 }
 
 // Field is a field
 type Field struct {
-	Pos lexer.Position
-
 	Optional bool `( @"optional"`
 	Required bool ` | @"required" )?`
 
@@ -131,16 +111,12 @@ func (s *Scalar) Parse(lex *lexer.PeekingLexer) error {
 }
 
 type Type struct {
-	Pos lexer.Position
-
 	Scalar    Scalar   `  @@`
 	Map       *MapType `| @@`
 	Reference string   `| @(Ident ( "." Ident)*)`
 }
 
 type MapType struct {
-	Pos lexer.Position
-
 	Key   *Type `"map" "<" @@`
 	Value *Type `"," @@ ">"`
 }
