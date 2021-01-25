@@ -2,7 +2,7 @@ package serv
 
 import "github.com/alecthomas/participle/v2"
 
-// Parser is a struct that will have all parser element
+// Parser is a struct that will have all .serv parser element
 type Parser struct {
 	parser *participle.Parser
 }
