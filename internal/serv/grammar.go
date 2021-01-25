@@ -32,22 +32,22 @@ type Message struct {
 
 // MessageDefinition is a definition for messages
 type MessageDefinition struct {
-	Enum    *Enum    `( @@`
-	Message *Message ` | @@`
-	Field   *Field   ` | @@ ) ";"*`
+	Message *Message `( @@`
+	// Enum    *Enum    ` | @@`
+	Field *Field ` | @@ ) ";"*`
 }
 
-// Enum is enum
-type Enum struct {
-	Name   string       `"enum" @Ident`
-	Values []*EnumValue `"{" ( @@ ( ";" )* )* "}"`
-}
+// // Enum is enum
+// type Enum struct {
+// 	Name   string       `"enum" @Ident`
+// 	Values []*EnumValue `"{" ( @@ ( ";" )* )* "}"`
+// }
 
-// EnumValue is enum value
-type EnumValue struct {
-	Key   string `@Ident`
-	Value int    `"=" @( [ "-" ] Int )`
-}
+// // EnumValue is enum value
+// type EnumValue struct {
+// 	Key   string `@Ident`
+// 	Value int    `"=" @( [ "-" ] Int )`
+// }
 
 // Field is a field
 type Field struct {
@@ -79,13 +79,20 @@ const (
 	Bytes
 )
 
-var scalarToString = map[Scalar]string{
+var scalarToGoString = map[Scalar]string{
 	None: "None", Double: "Double", Float: "Float", Int32: "Int32", Int64: "Int64", Uint32: "Uint32",
 	Uint64: "Uint64", Sint32: "Sint32", Sint64: "Sint64", Fixed32: "Fixed32", Fixed64: "Fixed64",
 	SFixed32: "SFixed32", SFixed64: "SFixed64", Bool: "Bool", String: "String", Bytes: "Bytes",
 }
 
-func (s Scalar) GoString() string { return scalarToString[s] }
+var scalarToString = map[Scalar]string{
+	None: "None", Double: "float64", Float: "float32", Int32: "int32", Int64: "int64", Uint32: "uint32",
+	Uint64: "uint64", Sint32: "int32", Sint64: "int64", Fixed32: "uint32", Fixed64: "uint64",
+	SFixed32: "int32", SFixed64: "int64", Bool: "bool", String: "string", Bytes: "[]byte",
+}
+
+func (s Scalar) GoString() string { return scalarToGoString[s] }
+func (s Scalar) String() string   { return scalarToString[s] }
 
 var stringToScalar = map[string]Scalar{
 	"double": Double, "float": Float, "int32": Int32, "int64": Int64, "uint32": Uint32, "uint64": Uint64,
@@ -111,12 +118,6 @@ func (s *Scalar) Parse(lex *lexer.PeekingLexer) error {
 }
 
 type Type struct {
-	Scalar    Scalar   `  @@`
-	Map       *MapType `| @@`
-	Reference string   `| @(Ident ( "." Ident)*)`
-}
-
-type MapType struct {
-	Key   *Type `"map" "<" @@`
-	Value *Type `"," @@ ">"`
+	Scalar    Scalar `  @@`
+	Reference string `| @(Ident ( "." Ident)*)`
 }

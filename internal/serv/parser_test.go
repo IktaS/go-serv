@@ -461,48 +461,6 @@ func TestParseMessage(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "Enum in message",
-			src: []byte(`
-				message TestMessage{
-					string TestString;
-					enum TestEnum {
-						TEST = 0;
-					}
-				};
-			`),
-			expected: &Serv{
-				Definitions: []*Definition{
-					{
-						Message: &Message{
-							Name: "TestMessage",
-							Definitions: []*MessageDefinition{
-								{
-									Field: &Field{
-										Name: "TestString",
-										Type: &Type{
-											Scalar: String,
-										},
-									},
-								},
-								{
-									Enum: &Enum{
-										Name: "TestEnum",
-										Values: []*EnumValue{
-											{
-												Key:   "TEST",
-												Value: 0,
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-			wantErr: false,
-		},
-		{
 			name: "Message in message",
 			src: []byte(`
 				message TestMessage{
