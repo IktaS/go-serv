@@ -1,6 +1,6 @@
 {{define "message"}}
 type {{.Name}} struct {
-    {{range .Definitions}}{{with .Field}}{{.Name}} {{with .Type}}{{.Scalar}}{{.Reference}}{{end}}{{end}}
+    {{range .Definitions}}{{with .Field}}{{.Name}} {{.Type}}{{end}}
     {{end}}
 }
 {{end}}

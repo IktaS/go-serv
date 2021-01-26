@@ -1,2 +1,2 @@
 {{define "service"}}
-func {{.Name}} ({{ range .Request }}{{if .Reference}}{{.Reference}},{{end}}{{end}}) ({{with .Response }}{{if .Reference}}{{.Reference}}{{end}}{{end}}){{end}}
+func {{.Name}} ({{ range .Request }}{{.Type}}{{end}}) ({{with .Response }}{{.Type}}{{end}}){{end}}

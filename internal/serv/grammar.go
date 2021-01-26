@@ -32,9 +32,9 @@ type Message struct {
 
 // MessageDefinition is a definition for messages
 type MessageDefinition struct {
-	Message *Message `( @@`
+	// Message *Message `( @@`
 	// Enum    *Enum    ` | @@`
-	Field *Field ` | @@ ) ";"*`
+	Field *Field `( @@ ) ";"*`
 }
 
 // // Enum is enum
@@ -120,4 +120,12 @@ func (s *Scalar) Parse(lex *lexer.PeekingLexer) error {
 type Type struct {
 	Scalar    Scalar `  @@`
 	Reference string `| @(Ident ( "." Ident)*)`
+}
+
+func (s Type) String() string {
+	if s.Reference == "" {
+		return s.Scalar.String()
+	} else {
+		return s.Reference
+	}
 }

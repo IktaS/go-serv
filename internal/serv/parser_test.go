@@ -461,52 +461,6 @@ func TestParseMessage(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "Message in message",
-			src: []byte(`
-				message TestMessage{
-					string TestString;
-					message TestMessage2{
-						string TestString2;
-					}
-				};
-			`),
-			expected: &Serv{
-				Definitions: []*Definition{
-					{
-						Message: &Message{
-							Name: "TestMessage",
-							Definitions: []*MessageDefinition{
-								{
-									Field: &Field{
-										Name: "TestString",
-										Type: &Type{
-											Scalar: String,
-										},
-									},
-								},
-								{
-									Message: &Message{
-										Name: "TestMessage2",
-										Definitions: []*MessageDefinition{
-											{
-												Field: &Field{
-													Name: "TestString2",
-													Type: &Type{
-														Scalar: String,
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-			wantErr: false,
-		},
-		{
 			name: "Multiple Messages",
 			src: []byte(`
 				message TestMessage{

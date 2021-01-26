@@ -48,7 +48,7 @@ func TestGenerateServServer(t *testing.T) {
 			WantErr: false,
 		},
 		{
-			Name: "Test Service with reference only",
+			Name: "Test Message with scalar only",
 			Serv: &Serv{
 				Definitions: []*Definition{
 					{
@@ -86,7 +86,6 @@ func TestGenerateServServer(t *testing.T) {
 		t.Run(tt.Name, func(t *testing.T) {
 			f := tt.Setup(t)
 			err := GenerateServServer(f, tt.Serv)
-			println()
 			if tt.WantErr {
 				assert.Error(t, err)
 			}
