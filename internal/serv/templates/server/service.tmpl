@@ -1,2 +1,2 @@
-{{define "service"}}
-func {{.Name}} ({{ range .Request }}{{.Type}}{{end}}) ({{with .Response }}{{.Type}}{{end}}){{end}}
+{{define "service"}}func {{.Name}} ({{$first := true}}{{ range .Request }}{{if $first}}{{$first = false}}{{else}}, {{end}}{{.}}{{end}}) {{with .Response }}{{.}}{{end}}
+{{end}}

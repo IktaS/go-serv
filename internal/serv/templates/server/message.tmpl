@@ -1,6 +1,4 @@
-{{define "message"}}
-type {{.Name}} struct {
-    {{range .Definitions}}{{with .Field}}{{.Name}} {{.Type}}{{end}}
-    {{end}}
-}
+{{define "message"}}type {{.Name}} struct {
+{{range .Definitions}}    {{with .Field}}{{.Name}} {{.Type}};
+{{end}}{{end}}}
 {{end}}
