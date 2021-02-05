@@ -1,4 +1,4 @@
-module github.com/go-serv
+module github.com/IktaS/go-serv
 
 go 1.15
 
