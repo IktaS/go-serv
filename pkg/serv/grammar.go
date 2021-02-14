@@ -94,7 +94,7 @@ var scalarToString = map[Scalar]string{
 func (s Scalar) GoString() string { return scalarToGoString[s] }
 func (s Scalar) String() string   { return scalarToString[s] }
 
-var stringToScalar = map[string]Scalar{
+var StringToScalar = map[string]Scalar{
 	"double": Double, "float": Float, "int32": Int32, "int64": Int64, "uint32": Uint32, "uint64": Uint64,
 	"sint32": Sint32, "sint64": Sint64, "fixed32": Fixed32, "fixed64": Fixed64, "sfixed32": SFixed32,
 	"sfixed64": SFixed64, "bool": Bool, "string": String, "bytes": Bytes,
@@ -105,7 +105,7 @@ func (s *Scalar) Parse(lex *lexer.PeekingLexer) error {
 	if err != nil {
 		return err
 	}
-	v, ok := stringToScalar[token.Value]
+	v, ok := StringToScalar[token.Value]
 	if !ok {
 		return participle.NextMatch
 	}
