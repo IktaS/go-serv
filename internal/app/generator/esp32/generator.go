@@ -23,7 +23,7 @@ import (
 // }
 
 // GenerateServServer will create a .go for server
-func GenerateServServer(w io.Writer, s *serv.Serv) error {
+func GenerateServServer(w io.Writer, s *serv.Gserv) error {
 	tmpl, err := template.ParseFiles("./templates/server/base.tmpl", "./templates/server/message.tmpl", "./templates/server/service.tmpl")
 	if err != nil {
 		return err
