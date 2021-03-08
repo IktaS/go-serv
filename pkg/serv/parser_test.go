@@ -10,7 +10,7 @@ func TestParseCombination(t *testing.T) {
 	tests := []struct {
 		name     string
 		src      []byte
-		expected *Serv
+		expected *Gserv
 		wantErr  bool
 	}{
 		{
@@ -19,9 +19,9 @@ func TestParseCombination(t *testing.T) {
 				message TestMessage{
 					string TestString;
 				};
-				service TestService(TestMessage) : string;
+				inbound TestService(TestMessage) : string;
 			`),
-			expected: &Serv{
+			expected: &Gserv{
 				Definitions: []*Definition{
 					{
 						Message: &Message{
@@ -39,7 +39,49 @@ func TestParseCombination(t *testing.T) {
 						},
 					},
 					{
-						Service: &Service{
+						InboundService: &InboundService{
+							Name: "TestService",
+							Request: []*Type{
+								{
+									Reference: "TestMessage",
+								},
+							},
+							Response: &Type{
+								Scalar: String,
+							},
+						},
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "Service with message as parameter",
+			src: []byte(`
+				message TestMessage{
+					string TestString;
+				};
+				outbound TestService(TestMessage) : string;
+			`),
+			expected: &Gserv{
+				Definitions: []*Definition{
+					{
+						Message: &Message{
+							Name: "TestMessage",
+							Definitions: []*MessageDefinition{
+								{
+									Field: &Field{
+										Name: "TestString",
+										Type: &Type{
+											Scalar: String,
+										},
+									},
+								},
+							},
+						},
+					},
+					{
+						OutboundService: &OutboundService{
 							Name: "TestService",
 							Request: []*Type{
 								{
@@ -61,9 +103,9 @@ func TestParseCombination(t *testing.T) {
 				message TestMessage{
 					string TestString;
 				};
-				service TestService(TestMessage,string) : string;
+				inbound TestService(TestMessage,string) : string;
 			`),
-			expected: &Serv{
+			expected: &Gserv{
 				Definitions: []*Definition{
 					{
 						Message: &Message{
@@ -81,7 +123,7 @@ func TestParseCombination(t *testing.T) {
 						},
 					},
 					{
-						Service: &Service{
+						InboundService: &InboundService{
 							Name: "TestService",
 							Request: []*Type{
 								{
@@ -106,9 +148,9 @@ func TestParseCombination(t *testing.T) {
 				message TestMessage{
 					string TestString;
 				};
-				service TestService(string) : TestMessage;
+				outbound TestService(string) : TestMessage;
 			`),
-			expected: &Serv{
+			expected: &Gserv{
 				Definitions: []*Definition{
 					{
 						Message: &Message{
@@ -126,7 +168,7 @@ func TestParseCombination(t *testing.T) {
 						},
 					},
 					{
-						Service: &Service{
+						OutboundService: &OutboundService{
 							Name: "TestService",
 							Request: []*Type{
 								{
@@ -148,9 +190,9 @@ func TestParseCombination(t *testing.T) {
 				message TestMessage{
 					string TestString;
 				};
-				service TestService(TestMessage) : TestMessage;
+				inbound TestService(TestMessage) : TestMessage;
 			`),
-			expected: &Serv{
+			expected: &Gserv{
 				Definitions: []*Definition{
 					{
 						Message: &Message{
@@ -168,7 +210,7 @@ func TestParseCombination(t *testing.T) {
 						},
 					},
 					{
-						Service: &Service{
+						InboundService: &InboundService{
 							Name: "TestService",
 							Request: []*Type{
 								{
@@ -184,6 +226,25 @@ func TestParseCombination(t *testing.T) {
 			},
 			wantErr: false,
 		},
+		{
+			name: "Service with same name",
+			src: []byte(`
+				inbound TestService(string);
+				inbound TestService(TestMessage) : TestMessage;
+				message TestMessage{
+					string TestString;
+				};
+			`),
+			wantErr: true,
+		},
+		{
+			name: "Service with nonexistent message",
+			src: []byte(`
+				inbound TestService(string);
+				inbound TestService(TestMessage) : TestMessage;
+			`),
+			wantErr: true,
+		},
 	}
 
 	parser, err := NewServParser()
@@ -194,6 +255,13 @@ func TestParseCombination(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			res, err := parser.Parse(tt.src)
+
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+
 			assert.Equal(t, tt.expected, res)
 			if tt.wantErr {
 				assert.Error(t, err)
@@ -206,18 +274,18 @@ func TestParseService(t *testing.T) {
 	tests := []struct {
 		name     string
 		src      []byte
-		expected *Serv
+		expected *Gserv
 		wantErr  bool
 	}{
 		{
-			name: "Service with no parameter and returns",
+			name: " Inbound service with no parameter and returns",
 			src: []byte(`
-				service TestService();
+				inbound TestService();
 			`),
-			expected: &Serv{
+			expected: &Gserv{
 				Definitions: []*Definition{
 					{
-						Service: &Service{
+						InboundService: &InboundService{
 							Name: "TestService",
 						},
 					},
@@ -228,12 +296,12 @@ func TestParseService(t *testing.T) {
 		{
 			name: "Service with no parameter but returns",
 			src: []byte(`
-				service TestService():int32;
+				outbound TestService():int32;
 			`),
-			expected: &Serv{
+			expected: &Gserv{
 				Definitions: []*Definition{
 					{
-						Service: &Service{
+						OutboundService: &OutboundService{
 							Name: "TestService",
 							Response: &Type{
 								Scalar: Int32,
@@ -247,12 +315,12 @@ func TestParseService(t *testing.T) {
 		{
 			name: "Service with return primitive",
 			src: []byte(`
-				service TestService(string):int32;
+				inbound TestService(string):int32;
 			`),
-			expected: &Serv{
+			expected: &Gserv{
 				Definitions: []*Definition{
 					{
-						Service: &Service{
+						InboundService: &InboundService{
 							Name: "TestService",
 							Request: []*Type{
 								{
@@ -271,12 +339,12 @@ func TestParseService(t *testing.T) {
 		{
 			name: "Service with parameter primitive",
 			src: []byte(`
-				service TestService(string):TestMessage2;
+				outbound TestService(string):TestMessage2;
 			`),
-			expected: &Serv{
+			expected: &Gserv{
 				Definitions: []*Definition{
 					{
-						Service: &Service{
+						OutboundService: &OutboundService{
 							Name: "TestService",
 							Request: []*Type{
 								{
@@ -295,12 +363,12 @@ func TestParseService(t *testing.T) {
 		{
 			name: "Service with two parameter primitives",
 			src: []byte(`
-				service TestService(string,int32):TestMessage2;
+				inbound TestService(string,int32):TestMessage2;
 			`),
-			expected: &Serv{
+			expected: &Gserv{
 				Definitions: []*Definition{
 					{
-						Service: &Service{
+						InboundService: &InboundService{
 							Name: "TestService",
 							Request: []*Type{
 								{
@@ -322,12 +390,12 @@ func TestParseService(t *testing.T) {
 		{
 			name: "Only define service with message parameter and message return",
 			src: []byte(`
-				service TestService(TestMessage1):TestMessage2;
+				outbound TestService(TestMessage1):TestMessage2;
 			`),
-			expected: &Serv{
+			expected: &Gserv{
 				Definitions: []*Definition{
 					{
-						Service: &Service{
+						OutboundService: &OutboundService{
 							Name: "TestService",
 							Request: []*Type{
 								{
@@ -346,12 +414,12 @@ func TestParseService(t *testing.T) {
 		{
 			name: "Service with two parameter message",
 			src: []byte(`
-				service TestService(TestMessage1,TestMessage2):TestMessage2;
+				inbound TestService(TestMessage1,TestMessage2):TestMessage2;
 			`),
-			expected: &Serv{
+			expected: &Gserv{
 				Definitions: []*Definition{
 					{
-						Service: &Service{
+						InboundService: &InboundService{
 							Name: "TestService",
 							Request: []*Type{
 								{
@@ -392,7 +460,7 @@ func TestParseMessage(t *testing.T) {
 	tests := []struct {
 		name     string
 		src      []byte
-		expected *Serv
+		expected *Gserv
 		wantErr  bool
 	}{
 		{
@@ -402,7 +470,7 @@ func TestParseMessage(t *testing.T) {
 					string TestString;
 				};
 			`),
-			expected: &Serv{
+			expected: &Gserv{
 				Definitions: []*Definition{
 					{
 						Message: &Message{
@@ -431,7 +499,7 @@ func TestParseMessage(t *testing.T) {
 					int32 TestInt;
 				};
 			`),
-			expected: &Serv{
+			expected: &Gserv{
 				Definitions: []*Definition{
 					{
 						Message: &Message{
@@ -472,7 +540,7 @@ func TestParseMessage(t *testing.T) {
 					int32 TestInt;
 				};
 			`),
-			expected: &Serv{
+			expected: &Gserv{
 				Definitions: []*Definition{
 					{
 						Message: &Message{

@@ -6,20 +6,28 @@ import (
 	"github.com/alecthomas/participle/v2/lexer"
 )
 
-//Serv is entry point to our parser
-type Serv struct {
+//Gserv is entry point to our parser
+type Gserv struct {
 	Definitions []*Definition `( @@ ";"* )*`
 }
 
 //Definition is each definition in our service
 type Definition struct {
-	Service *Service `@@*`
-	Message *Message `@@*`
+	InboundService  *InboundService  `@@*`
+	OutboundService *OutboundService `@@*`
+	Message         *Message         `@@*`
 }
 
 // Service is a definition of a service
-type Service struct {
-	Name     string  `"service" @Ident`
+type InboundService struct {
+	Name     string  `"inbound" @Ident`
+	Request  []*Type `"(" ( @@ ","* )* ")"`
+	Response *Type   `":"? @@?`
+}
+
+// Service is a definition of a service
+type OutboundService struct {
+	Name     string  `"outbound" @Ident`
 	Request  []*Type `"(" ( @@ ","* )* ")"`
 	Response *Type   `":"? @@?`
 }
