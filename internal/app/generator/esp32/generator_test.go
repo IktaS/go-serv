@@ -6,13 +6,14 @@ import (
 	"os"
 	"testing"
 
+	"github.com/IktaS/go-serv/pkg/serv"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestGenerateServServer(t *testing.T) {
 	tests := []struct {
 		Name     string
-		Serv     *Serv
+		Serv     *serv.Serv
 		Setup    func(*testing.T) *os.File
 		Teardown func(*testing.T, *os.File)
 		expected string
@@ -20,17 +21,17 @@ func TestGenerateServServer(t *testing.T) {
 	}{
 		{
 			Name: "Test Service with reference only",
-			Serv: &Serv{
-				Definitions: []*Definition{
+			Serv: &serv.Serv{
+				Definitions: []*serv.Definition{
 					{
-						Service: &Service{
+						Service: &serv.Service{
 							Name: "TestService",
-							Request: []*Type{
+							Request: []*serv.Type{
 								{
 									Reference: "TestMessage1",
 								},
 							},
-							Response: &Type{
+							Response: &serv.Type{
 								Reference: "TestMessage2",
 							},
 						},
@@ -53,12 +54,12 @@ func TestGenerateServServer(t *testing.T) {
 		},
 		{
 			Name: "Test Service with two parameter",
-			Serv: &Serv{
-				Definitions: []*Definition{
+			Serv: &serv.Serv{
+				Definitions: []*serv.Definition{
 					{
-						Service: &Service{
+						Service: &serv.Service{
 							Name: "TestService",
-							Request: []*Type{
+							Request: []*serv.Type{
 								{
 									Reference: "TestMessage1",
 								},
@@ -66,7 +67,7 @@ func TestGenerateServServer(t *testing.T) {
 									Reference: "TestMessage2",
 								},
 							},
-							Response: &Type{
+							Response: &serv.Type{
 								Reference: "TestMessage2",
 							},
 						},
@@ -89,17 +90,17 @@ func TestGenerateServServer(t *testing.T) {
 		},
 		{
 			Name: "Test Message with scalar only",
-			Serv: &Serv{
-				Definitions: []*Definition{
+			Serv: &serv.Serv{
+				Definitions: []*serv.Definition{
 					{
-						Message: &Message{
+						Message: &serv.Message{
 							Name: "TestMessage",
-							Definitions: []*MessageDefinition{
+							Definitions: []*serv.MessageDefinition{
 								{
-									Field: &Field{
+									Field: &serv.Field{
 										Name: "TestString",
-										Type: &Type{
-											Scalar: String,
+										Type: &serv.Type{
+											Scalar: serv.String,
 										},
 									},
 								},
@@ -124,25 +125,25 @@ func TestGenerateServServer(t *testing.T) {
 		},
 		{
 			Name: "Test Message with two field",
-			Serv: &Serv{
-				Definitions: []*Definition{
+			Serv: &serv.Serv{
+				Definitions: []*serv.Definition{
 					{
-						Message: &Message{
+						Message: &serv.Message{
 							Name: "TestMessage",
-							Definitions: []*MessageDefinition{
+							Definitions: []*serv.MessageDefinition{
 								{
-									Field: &Field{
+									Field: &serv.Field{
 										Name: "TestString",
-										Type: &Type{
-											Scalar: String,
+										Type: &serv.Type{
+											Scalar: serv.String,
 										},
 									},
 								},
 								{
-									Field: &Field{
+									Field: &serv.Field{
 										Name: "TestString2",
-										Type: &Type{
-											Scalar: String,
+										Type: &serv.Type{
+											Scalar: serv.String,
 										},
 									},
 								},
@@ -167,17 +168,17 @@ func TestGenerateServServer(t *testing.T) {
 		},
 		{
 			Name: "Test Message and Service",
-			Serv: &Serv{
-				Definitions: []*Definition{
+			Serv: &serv.Serv{
+				Definitions: []*serv.Definition{
 					{
-						Message: &Message{
+						Message: &serv.Message{
 							Name: "TestMessage",
-							Definitions: []*MessageDefinition{
+							Definitions: []*serv.MessageDefinition{
 								{
-									Field: &Field{
+									Field: &serv.Field{
 										Name: "TestString",
-										Type: &Type{
-											Scalar: String,
+										Type: &serv.Type{
+											Scalar: serv.String,
 										},
 									},
 								},
@@ -185,14 +186,14 @@ func TestGenerateServServer(t *testing.T) {
 						},
 					},
 					{
-						Service: &Service{
+						Service: &serv.Service{
 							Name: "TestService",
-							Request: []*Type{
+							Request: []*serv.Type{
 								{
 									Reference: "TestMessage1",
 								},
 							},
-							Response: &Type{
+							Response: &serv.Type{
 								Reference: "TestMessage2",
 							},
 						},

@@ -3,6 +3,8 @@ package serv
 import (
 	"html/template"
 	"io"
+
+	"github.com/IktaS/go-serv/pkg/serv"
 )
 
 // // GenerateServiceClient will create a service for client
@@ -21,7 +23,7 @@ import (
 // }
 
 // GenerateServServer will create a .go for server
-func GenerateServServer(w io.Writer, s *Serv) error {
+func GenerateServServer(w io.Writer, s *serv.Serv) error {
 	tmpl, err := template.ParseFiles("./templates/server/base.tmpl", "./templates/server/message.tmpl", "./templates/server/service.tmpl")
 	if err != nil {
 		return err
