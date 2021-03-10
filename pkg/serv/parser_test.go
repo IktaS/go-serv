@@ -240,8 +240,7 @@ func TestParseCombination(t *testing.T) {
 		{
 			name: "Service with nonexistent message",
 			src: []byte(`
-				inbound TestService(string);
-				inbound TestService(TestMessage) : TestMessage;
+				inbound TestService(string) : TestMessage;
 			`),
 			wantErr: true,
 		},
