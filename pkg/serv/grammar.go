@@ -13,21 +13,15 @@ type Gserv struct {
 
 //Definition is each definition in our service
 type Definition struct {
-	InboundService  *InboundService  `@@*`
-	OutboundService *OutboundService `@@*`
-	Message         *Message         `@@*`
+	Service *Service `@@*`
+	Message *Message `@@*`
 }
 
 // Service is a definition of a service
-type InboundService struct {
-	Name     string  `"inbound" @Ident`
-	Request  []*Type `"(" ( @@ ","* )* ")"`
-	Response *Type   `":"? @@?`
-}
-
-// Service is a definition of a service
-type OutboundService struct {
-	Name     string  `"outbound" @Ident`
+type Service struct {
+	Inbound  bool    `"def" ( @"inbound"`
+	Outbound bool    `| @"outbound" )`
+	Name     string  `@Ident`
 	Request  []*Type `"(" ( @@ ","* )* ")"`
 	Response *Type   `":"? @@?`
 }

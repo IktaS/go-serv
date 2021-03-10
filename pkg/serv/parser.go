@@ -37,23 +37,15 @@ func (p *Parser) Parse(input []byte) (*Gserv, error) {
 }
 
 func checkDuplicateReference(s *Gserv) error {
-	InboundServiceFlag := make(map[string]bool)
-	OutboundServiceFlag := make(map[string]bool)
+	ServiceFlag := make(map[string]bool)
 	MessageFlag := make(map[string]bool)
 	for _, def := range s.Definitions {
-		if def.InboundService != nil {
-			_, ok := InboundServiceFlag[def.InboundService.Name]
+		if def.Service != nil {
+			_, ok := ServiceFlag[def.Service.Name]
 			if ok {
-				return errors.New("Duplicate Inbound Service")
+				return errors.New("Duplicate Service")
 			}
-			InboundServiceFlag[def.InboundService.Name] = true
-		}
-		if def.OutboundService != nil {
-			_, ok := OutboundServiceFlag[def.OutboundService.Name]
-			if ok {
-				return errors.New("Duplicate Outbound Service")
-			}
-			OutboundServiceFlag[def.OutboundService.Name] = true
+			ServiceFlag[def.Service.Name] = true
 		}
 		if def.Message != nil {
 			_, ok := MessageFlag[def.Message.Name]
@@ -64,9 +56,9 @@ func checkDuplicateReference(s *Gserv) error {
 		}
 	}
 	for _, def := range s.Definitions {
-		if def.InboundService != nil {
-			if def.InboundService.Request != nil {
-				for _, t := range def.InboundService.Request {
+		if def.Service != nil {
+			if def.Service.Request != nil {
+				for _, t := range def.Service.Request {
 					if t.Reference != "" {
 						_, ok := MessageFlag[t.Reference]
 						if !ok {
@@ -75,29 +67,9 @@ func checkDuplicateReference(s *Gserv) error {
 					}
 				}
 			}
-			if def.InboundService.Response != nil {
-				if def.InboundService.Response.Reference != "" {
-					_, ok := MessageFlag[def.InboundService.Response.Reference]
-					if !ok {
-						return errors.New("Reference not found")
-					}
-				}
-			}
-		}
-		if def.OutboundService != nil {
-			if def.OutboundService.Request != nil {
-				for _, t := range def.OutboundService.Request {
-					if t.Reference != "" {
-						_, ok := MessageFlag[t.Reference]
-						if !ok {
-							return errors.New("Reference not found")
-						}
-					}
-				}
-			}
-			if def.OutboundService.Response != nil {
-				if def.OutboundService.Response.Reference != "" {
-					_, ok := MessageFlag[def.OutboundService.Response.Reference]
+			if def.Service.Response != nil {
+				if def.Service.Response.Reference != "" {
+					_, ok := MessageFlag[def.Service.Response.Reference]
 					if !ok {
 						return errors.New("Reference not found")
 					}
